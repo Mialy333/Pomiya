@@ -3,6 +3,7 @@ import AIChatCoach from "./AIChatCoach_HF_T5";
 import WalletConnect from "./WalletConnect";
 import Onboarding from "./components/Onboarding";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 const quests = [
   "Track 3 unnecessary expenses",
@@ -113,6 +114,9 @@ export default function App() {
         <p className="text-lg mb-2 text-gray-600">
           Your Financial Pet Companion
         </p>
+        <div className="mb-4 flex justify-center">
+          <WalletMultiButton />
+        </div>
 
         <div className="my-4">
           <p>
