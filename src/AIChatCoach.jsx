@@ -12,7 +12,7 @@ const AIChatCoach = () => {
         {
           method: "POST",
           headers: {
-            Authorization: "Bearer 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",
+            Authorization: `Bearer ${import.meta.env.VITE_HF_API_KEY}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ inputs: input }),
