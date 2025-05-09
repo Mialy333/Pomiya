@@ -35,35 +35,7 @@ export default function Onboarding({ onFinish }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [isStudent, setIsStudent] = useState(null);
-  const [enteredCode, setEnteredCode] = useState("");
-  const [generatedCode, setGeneratedCode] = useState(null);
-
-  const sendVerificationCode = async () => {
-    const code = Math.floor(100000 + Math.random() * 900000);
-    setGeneratedCode(code);
-
-    const API_BASE = "https://pomi-topaz.vercel.app"; // fixe
-
-    try {
-      const response = await fetch(`${API_BASE}/api/sendCode`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, code }),
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        setStep(step + 1);
-      } else {
-        alert("Failed to send code.");
-      }
-    } catch (err) {
-      console.error("Error sending code:", err);
-      alert("An error occurred while sending the code.");
-    }
-  };
 
   const nextSlide = () => {
     if (index < slides.length - 1) {
@@ -155,53 +127,11 @@ export default function Onboarding({ onFinish }) {
             className="w-full p-3 border rounded-xl"
           />
           <button
-            onClick={() => setStep(step + 1)}
-            disabled={!email}
-            className="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl"
-          >
-            Next
-          </button>
-        </>
-      ),
-    },
-    {
-      title: "Verify your number",
-      content: (
-        <>
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="+33612345678"
-            className="w-full p-3 border rounded-xl"
-          />
-          <button
-            onClick={sendVerificationCode}
-            disabled={!phone}
-            className="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl"
-          >
-            Send code on WhatsApp
-          </button>
-        </>
-      ),
-    },
-    {
-      title: "Enter the code",
-      content: (
-        <>
-          <input
-            type="text"
-            value={enteredCode}
-            onChange={(e) => setEnteredCode(e.target.value)}
-            placeholder="6-digit code"
-            className="w-full p-3 border rounded-xl"
-          />
-          <button
             onClick={onFinish}
-            disabled={enteredCode !== generatedCode?.toString()}
+            disabled={!email}
             className="mt-4 bg-green-600 text-white px-6 py-2 rounded-xl"
           >
-            ✅ Let's go!
+            ✅ Let’s go!
           </button>
         </>
       ),
@@ -245,12 +175,10 @@ export default function Onboarding({ onFinish }) {
               transition={{ duration: 0.6 }}
               className="w-48 mx-auto mb-4"
             />
-
             <h2 className="text-2xl font-bold mb-2 text-indigo-700">
               {slides[index].title}
             </h2>
             <p className="text-gray-600 mb-6">{slides[index].text}</p>
-
             <button
               onClick={nextSlide}
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl transition"
