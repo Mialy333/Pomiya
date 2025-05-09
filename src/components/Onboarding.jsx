@@ -45,8 +45,8 @@ export default function Onboarding({ onFinish }) {
     setGeneratedCode(code);
 
     const API_BASE = import.meta.env.DEV
-      ? "http://localhost:3000" // optionnel si backend local
-      : "https://pomi-topaz.vercel.app"; // 👉 ton déploiement Vercel
+      ? "http://localhost:3000"
+      : "https://pomi-topaz.vercel.app";
 
     try {
       const response = await fetch(`${API_BASE}/api/sendCode`, {
