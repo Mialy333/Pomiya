@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import AIChatCoach from "./AIChatCoach";
+import AIChatCoach from "./AIChatCoach_HF_T5";
 import WalletConnect from "./WalletConnect";
+import Onboarding from "./components/Onboarding";
 
 const quests = [
   "Track 3 unnecessary expenses",
@@ -34,6 +35,7 @@ const getLabelForLevel = (level) => {
 };
 
 export default function App() {
+  const [showOnboarding, setShowOnboarding] = useState(true);
   const [xp, setXP] = useState(0);
   const [completed, setCompleted] = useState(Array(quests.length).fill(false));
   const [level, setLevel] = useState(1);
@@ -46,7 +48,7 @@ export default function App() {
       setLevel(newLevel);
       setImage(getImageForLevel(newLevel));
       setLevelUp(true);
-      setTimeout(() => setLevelUp(false), 2000); // reset après 2s
+      setTimeout(() => setLevelUp(false), 2000);
     }
   }, [xp]);
 
@@ -60,6 +62,10 @@ export default function App() {
   };
 
   const label = getLabelForLevel(level);
+
+  if (showOnboarding) {
+    return <Onboarding onFinish={() => setShowOnboarding(false)} />;
+  }
 
   return (
     <WalletConnect>
