@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AIChatCoach from "./AIChatCoach_HF_T5";
 import WalletConnect from "./WalletConnect";
 import Onboarding from "./components/Onboarding";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 const quests = [
   "Track 3 unnecessary expenses",
@@ -42,6 +43,33 @@ export default function App() {
   const [levelUp, setLevelUp] = useState(false);
   const [image, setImage] = useState(getImageForLevel(1));
 
+  const { publicKey } = useWallet();
+
+  // ➕ Restaurer XP et quêtes si wallet déjà connecté
+  useEffect(() => {
+    if (publicKey) {
+      const key = publicKey.toBase58();
+      const storedXP = parseInt(localStorage.getItem(`xp-${key}`), 10);
+      const storedCompleted = localStorage.getItem(`completed-${key}`);
+      if (!isNaN(storedXP)) {
+        setXP(storedXP);
+      }
+      if (storedCompleted) {
+        setCompleted(JSON.parse(storedCompleted));
+      }
+    }
+  }, [publicKey]);
+
+  // 🔁 Sauvegarder XP et quêtes
+  useEffect(() => {
+    if (publicKey) {
+      const key = publicKey.toBase58();
+      localStorage.setItem(`xp-${key}`, xp);
+      localStorage.setItem(`completed-${key}`, JSON.stringify(completed));
+    }
+  }, [xp, completed, publicKey]);
+
+  // ⚙️ Calcul automatique du level
   useEffect(() => {
     const newLevel = getLevel(xp);
     if (newLevel !== level) {
@@ -52,6 +80,7 @@ export default function App() {
     }
   }, [xp]);
 
+  // ✅ Quête terminée
   const handleComplete = (index) => {
     if (!completed[index]) {
       const updated = [...completed];
@@ -70,6 +99,16 @@ export default function App() {
   return (
     <WalletConnect>
       <div className="p-4 max-w-xl mx-auto text-center">
+        {publicKey && (
+          <div className="mb-3 text-sm text-gray-600">
+            👛 Wallet connected:&nbsp;
+            <span className="font-mono text-indigo-700">
+              {publicKey.toBase58().slice(0, 4)}...
+              {publicKey.toBase58().slice(-4)}
+            </span>
+          </div>
+        )}
+
         <h1 className="text-3xl font-bold mb-2">🎓 Welcome to Pomiya</h1>
         <p className="text-lg mb-2 text-gray-600">
           Your Financial Pet Companion
@@ -117,6 +156,21 @@ export default function App() {
             </button>
           ))}
         </div>
+
+        {publicKey && (
+          <button
+            onClick={() => {
+              const key = publicKey.toBase58();
+              localStorage.removeItem(`xp-${key}`);
+              localStorage.removeItem(`completed-${key}`);
+              setXP(0);
+              setCompleted(Array(quests.length).fill(false));
+            }}
+            className="mt-6 text-sm text-red-600 hover:text-red-800 underline"
+          >
+            🔄 Reset progress
+          </button>
+        )}
 
         <AIChatCoach />
       </div>
