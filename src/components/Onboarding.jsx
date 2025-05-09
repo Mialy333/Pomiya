@@ -44,9 +44,7 @@ export default function Onboarding({ onFinish }) {
     const code = Math.floor(100000 + Math.random() * 900000);
     setGeneratedCode(code);
 
-    const API_BASE = import.meta.env.DEV
-      ? "http://localhost:3000"
-      : "https://pomi-topaz.vercel.app";
+    const API_BASE = "https://pomi-topaz.vercel.app"; // fixe
 
     try {
       const response = await fetch(`${API_BASE}/api/sendCode`, {
