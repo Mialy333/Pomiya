@@ -31,48 +31,236 @@ const slides = [
 
 export default function Onboarding({ onFinish }) {
   const [index, setIndex] = useState(0);
+  const [step, setStep] = useState(0);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [isStudent, setIsStudent] = useState(null);
+  const [enteredCode, setEnteredCode] = useState("");
+  const [generatedCode, setGeneratedCode] = useState(null);
 
-  const next = () => {
+  const sendVerificationCode = async () => {
+    const code = Math.floor(100000 + Math.random() * 900000);
+    setGeneratedCode(code);
+
+    const API_BASE = import.meta.env.DEV
+      ? "http://localhost:3000" // optionnel si backend local
+      : "https://pomi-topaz.vercel.app"; // 👉 ton déploiement Vercel
+
+    try {
+      const response = await fetch(`${API_BASE}/api/sendCode`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, code }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setStep(step + 1);
+      } else {
+        alert("Failed to send code.");
+      }
+    } catch (err) {
+      console.error("Error sending code:", err);
+      alert("An error occurred while sending the code.");
+    }
+  };
+
+  const nextSlide = () => {
     if (index < slides.length - 1) {
       setIndex(index + 1);
     } else {
-      onFinish(); // callback vers l'app principale
+      setStep(1);
     }
   };
+
+  const slidesDone = step > 0;
+
+  const formSteps = [
+    {
+      title: "Who are you?",
+      content: (
+        <div className="space-y-4">
+          <button
+            onClick={() => {
+              setIsStudent(true);
+              setStep(step + 1);
+            }}
+            className="bg-indigo-600 text-white w-full p-3 rounded-xl"
+          >
+            🎓 I'm a student
+          </button>
+          <button
+            onClick={() => {
+              setIsStudent(false);
+              setStep(step + 1);
+            }}
+            className="border border-indigo-600 text-indigo-600 w-full p-2 rounded-xl text-sm"
+          >
+            I'm not a student
+          </button>
+        </div>
+      ),
+    },
+    {
+      title: "What's your first name?",
+      content: (
+        <>
+          <input
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="First name"
+            className="w-full p-3 border rounded-xl"
+          />
+          <button
+            onClick={() => setStep(step + 1)}
+            disabled={!firstName}
+            className="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl"
+          >
+            Next
+          </button>
+        </>
+      ),
+    },
+    {
+      title: "And your last name?",
+      content: (
+        <>
+          <input
+            type="text"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            placeholder="Last name"
+            className="w-full p-3 border rounded-xl"
+          />
+          <button
+            onClick={() => setStep(step + 1)}
+            disabled={!lastName}
+            className="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl"
+          >
+            Next
+          </button>
+        </>
+      ),
+    },
+    {
+      title: "What's your email?",
+      content: (
+        <>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            className="w-full p-3 border rounded-xl"
+          />
+          <button
+            onClick={() => setStep(step + 1)}
+            disabled={!email}
+            className="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl"
+          >
+            Next
+          </button>
+        </>
+      ),
+    },
+    {
+      title: "Verify your number",
+      content: (
+        <>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="+33612345678"
+            className="w-full p-3 border rounded-xl"
+          />
+          <button
+            onClick={sendVerificationCode}
+            disabled={!phone}
+            className="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl"
+          >
+            Send code on WhatsApp
+          </button>
+        </>
+      ),
+    },
+    {
+      title: "Enter the code",
+      content: (
+        <>
+          <input
+            type="text"
+            value={enteredCode}
+            onChange={(e) => setEnteredCode(e.target.value)}
+            placeholder="6-digit code"
+            className="w-full p-3 border rounded-xl"
+          />
+          <button
+            onClick={onFinish}
+            disabled={enteredCode !== generatedCode?.toString()}
+            className="mt-4 bg-green-600 text-white px-6 py-2 rounded-xl"
+          >
+            ✅ Let's go!
+          </button>
+        </>
+      ),
+    },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center text-center bg-gradient-to-br from-indigo-50 to-purple-100 p-4">
       <AnimatePresence mode="wait">
-        <motion.div
-          key={index}
-          initial={{ opacity: 0, x: 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -100 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-md w-full"
-        >
-          <motion.img
-            src={slides[index].image}
-            alt="slide"
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ duration: 0.6 }}
-            className="w-48 mx-auto mb-4"
-          />
-
-          <h2 className="text-2xl font-bold mb-2 text-indigo-700">
-            {slides[index].title}
-          </h2>
-          <p className="text-gray-600 mb-6">{slides[index].text}</p>
-
-          <button
-            onClick={next}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl transition"
+        {slidesDone && formSteps[step - 1] ? (
+          <motion.div
+            key={`form-${step}`}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-md w-full"
           >
-            {index === slides.length - 1 ? "Let’s go!" : "Next"}
-          </button>
-        </motion.div>
+            <>
+              <h2 className="text-2xl font-bold text-indigo-700 mb-4">
+                {formSteps[step - 1].title}
+              </h2>
+              {formSteps[step - 1].content}
+            </>
+          </motion.div>
+        ) : (
+          <motion.div
+            key={`slide-${index}`}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-md w-full"
+          >
+            <motion.img
+              src={slides[index].image}
+              alt="slide"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.6 }}
+              className="w-48 mx-auto mb-4"
+            />
+
+            <h2 className="text-2xl font-bold mb-2 text-indigo-700">
+              {slides[index].title}
+            </h2>
+            <p className="text-gray-600 mb-6">{slides[index].text}</p>
+
+            <button
+              onClick={nextSlide}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl transition"
+            >
+              {index === slides.length - 1 ? "Next" : "Continue"}
+            </button>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
