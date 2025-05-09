@@ -3,9 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const slides = [
   {
+    title: "Welcome!",
+    text: "Start your journey with Pomiya.",
+    image: "/onboarding/slide5.png",
+  },
+  {
     title: "Meet Pomiya!",
     text: "Your new financial companion. Cute, smart and here to help.",
-    image: "/onboarding/slide5.png",
+    image: "/onboarding/slide1.png",
   },
   {
     title: "Set Your First Goal",
@@ -31,7 +36,7 @@ export default function Onboarding({ onFinish }) {
     if (index < slides.length - 1) {
       setIndex(index + 1);
     } else {
-      onFinish(); // callback vers l'accueil
+      onFinish(); // callback vers l'app principale
     }
   };
 
@@ -46,15 +51,21 @@ export default function Onboarding({ onFinish }) {
           transition={{ duration: 0.6 }}
           className="max-w-md w-full"
         >
-          <img
+          <motion.img
             src={slides[index].image}
             alt="slide"
-            className="w-48 mx-auto mb-4 rounded-xl shadow-md"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className="w-48 mx-auto mb-4"
           />
+
           <h2 className="text-2xl font-bold mb-2 text-indigo-700">
             {slides[index].title}
           </h2>
           <p className="text-gray-600 mb-6">{slides[index].text}</p>
+
           <button
             onClick={next}
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl transition"
