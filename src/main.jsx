@@ -2,13 +2,16 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import { BrowserRouter } from "react-router-dom";
 
-import SolanaProvider from "./providers/SolanaProvider"; // chemin selon ton projet
+import SolanaProvider from "./providers/SolanaProvider";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <SolanaProvider>
-      <App />
-    </SolanaProvider>
+    <BrowserRouter>
+      <SolanaProvider>
+        <App />
+      </SolanaProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
