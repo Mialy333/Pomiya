@@ -4,11 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 const slides = [
   {
     title: "Welcome!",
-    text: "Start your journey with Pomiya.",
+    text: "Start your journey with Pomi",
     image: "/onboarding/slide5.png",
   },
   {
-    title: "Meet Pomiya!",
+    title: "Meet Pomi!",
     text: "Your new financial companion. Cute, smart and here to help.",
     image: "/onboarding/slide1.png",
   },
