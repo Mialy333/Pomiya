@@ -105,7 +105,7 @@ export default function Home() {
           </div>
         )}
 
-        <h1 className="text-3xl font-bold mb-2">🎓 Welcome to Pomiya</h1>
+        <h1 className="text-3xl font-bold mb-2">🎓 Welcome to Pomi</h1>
         <p className="text-lg mb-2 text-gray-600">
           Your Financial Pet Companion
         </p>
